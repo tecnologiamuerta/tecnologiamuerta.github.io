@@ -1,0 +1,26 @@
+name: Restricción de Ramas para PR
+
+on:
+  pull_request:
+    branches:
+      - PROD
+      - QA
+
+jobs:
+  check-source-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validar origen para PROD
+        if: github.base_ref == 'PROD' && github.head_ref != 'QA'
+        run: |
+          echo "❌ ERROR: La rama 'prod' solo puede recibir Pull Requests desde 'qa'."
+          exit 1
+
+      - name: Validar origen para QA
+        if: github.base_ref == 'QA' && github.head_ref != 'DEV'
+        run: |
+          echo "❌ ERROR: La rama 'qa' solo puede recibir Pull Requests desde 'dev'."
+          exit 1
+
+      - name: Validación Exitosa
+        run: echo "✅ Origen de rama correcto. Puedes continuar."
